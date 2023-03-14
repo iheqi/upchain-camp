@@ -21,8 +21,8 @@ describe("Counter contract", function () {
 
     try {
       await hardhatCounter.connect(addr1).add(1);
-    } catch (error) {
-      expect(await hardhatCounter.counter()).to.equal(1);
-    }
+    } catch (error) { }
+
+    expect(await hardhatCounter.counter()).to.equal(1);
   });
 });
