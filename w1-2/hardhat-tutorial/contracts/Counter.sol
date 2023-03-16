@@ -9,7 +9,7 @@ contract Counter {
   address owner;
 
   modifier onlyOwner() {
-    require(msg.sender == owner, "Only owner can call add() function");
+    require(msg.sender == owner, "Only owner.");
     _;
   }
 

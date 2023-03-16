@@ -19,10 +19,13 @@ describe("Counter contract", function () {
     await hardhatCounter.add(1);
     expect(await hardhatCounter.counter()).to.equal(1);
 
-    try {
-      await hardhatCounter.connect(addr1).add(1);
-    } catch (error) { }
-
+    // https://hardhat.org/hardhat-chai-matchers/docs/overview
+    await expect(hardhatCounter.connect(addr1).add(1)).to.be.revertedWith('Only owner.');
     expect(await hardhatCounter.counter()).to.equal(1);
+
+    // try {
+    //   await hardhatCounter.connect(addr1).add(1);
+    // } catch (error) { }
+    // expect(await hardhatCounter.counter()).to.equal(1);
   });
 });
