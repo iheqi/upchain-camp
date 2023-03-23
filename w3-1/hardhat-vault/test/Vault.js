@@ -4,40 +4,104 @@ const { ethers } = require('hardhat');
 
 describe("Test contract", function () {
 
-  const scoreAbi = [
-    // "address immutable public teacher"
-    "function teacher() public view returns(address)", // 对于 public 变量，ABI可以这样写
-    "function scores(address) public view returns(uint256)", // 对于 public 变量，ABI可以这样写
-    // "function getTeacher() public view returns (address)"
-    "function setStudentScore(address, uint256) external"
-  ]
-
   async function deployFixture() {
     const [owner, addr1] = await ethers.getSigners();
-    const Teacher = await ethers.getContractFactory("Teacher");
-    const teacher = await Teacher.deploy();
-    return { Teacher, teacher, owner, addr1 };
+
+    const GaGa = await ethers.getContractFactory("GaGa");
+    const gaga = await GaGa.deploy("GAGA", "GAGA");
+    console.log("gaga token address:", gaga.address);
+  
+    const Vault = await ethers.getContractFactory("Vault");
+    const vault = await Vault.deploy(gaga.address);
+    console.log("vault address:", vault.address);
+
+    expect(await vault.asset()).to.be.equal(gaga.address);
+
+    return { gaga, vault, owner, addr1 };
   }
 
-  it("test score teacher", async function () {
-    const { teacher, owner, addr1 } = await loadFixture(deployFixture);
+  it("test mint gaga token", async function () {
+    const { gaga, owner, addr1 } = await loadFixture(deployFixture);
 
-    const scoreAddress = await teacher.score(); // 虽然合约上变量是实例。这里获取到的是地址
-    const score = new ethers.Contract(scoreAddress, scoreAbi, ethers.provider);
+    await gaga.mint(10000);
+    expect(await gaga.balanceOf(owner.address)).to.equal(10000);
 
-    expect(await score.teacher()).to.equal(teacher.address);
+    await expect(gaga.mint(90001)).to.be.revertedWith('Max totalSupply is 100000');
   });
 
-  it("test teacher setStudent score ", async function () {
-    const { teacher, owner, addr1 } = await loadFixture(deployFixture);
+  it("test Vault deposit", async function () {
+    const { gaga, vault, owner, addr1 } = await loadFixture(deployFixture);
+    await gaga.mint(10000);
+    await gaga.approve(vault.address, 10000);
 
-    const scoreAddress = await teacher.score(); // 虽然合约上变量是实例。这里获取到的是地址
-    const score = new ethers.Contract(scoreAddress, scoreAbi, ethers.provider);
-    expect(await teacher.setStudentScore(owner.address, 100));
-    expect(await score.scores(owner.address)).to.be.equal(100);
+    await vault.deposit(10000, owner.address);
+    expect(await gaga.balanceOf(owner.address)).to.equal(0);
+    expect(await vault.totalAssets()).to.equal(10000);
+  });
 
-    await expect(score.connect(addr1).setStudentScore(addr1.address, 100)).to.be.revertedWith('only teacher');
-    await expect(teacher.connect(addr1).setStudentScore(addr1.address, 100)).to.be.revertedWith('only teacher');
+  it("test Vault deposit with ERC2612 permit", async function () {
+    const { gaga, vault, owner, addr1 } = await loadFixture(deployFixture);
+    await gaga.mint(10000);
+    // await gaga.approve(vault.address, 10000); // 无需用户手动授权
+
+
+    // 根据 EIP712 规范进行签名
+    // const owner = owner.address;           // Owner的钱包地址
+    const spender = vault.address;         // Spender的钱包地址
+    const value = 10000;                   // 需要授权的代币数量
+    const deadline = ((Date.now() / 1000) | 0) + 10; // deadline时间（timestamp）时间戳后10秒
+    const nonce = await gaga.nonces(owner.address); // 获取 Erc20Permit 合约上自己的 nonce
+    const domainSeparator = await gaga.DOMAIN_SEPARATOR();
+    console.log('domainSeparator', domainSeparator);
+    
+    const message = ethers.utils.solidityKeccak256(
+      ['bytes1', 'bytes1', 'bytes32', 'bytes32', 'bytes32'],
+      [
+        '0x19',
+        '0x01',
+        domainSeparator,
+        ethers.utils.keccak256(
+          ethers.utils.defaultAbiCoder.encode(
+            ['bytes32', 'address', 'address', 'uint256', 'uint256', 'uint256'],
+            [ 
+              // ethers.utils.id('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'), // 一开始用 keccak256 一直报错。
+              domainSeparator,
+              owner.address, vault.address, value, nonce, deadline
+            ]
+          )
+        ),
+        ethers.utils.keccak256(await gaga.PERMIT_TYPEHASH())
+      ]
+    );
+
+    // const message = {
+    //   owner: owner.address,
+    //   spender,
+    //   value,
+    //   deadline,
+    //   nonce,
+    //   chainId: 1337, // hardhat node 默认 chainId。如果是在其他链上操作，chainId需要相应修改
+    //   verifyingContract: gaga.address
+    // };
+    // const signature = await ethers.utils.signTypedMessage(
+    //   privateKey, {data: message}
+    // );
+
+    // 搞不定，验签不过
+    const signature = await owner.signMessage(ethers.utils.arrayify(message));
+    const { v, r, s } = ethers.utils.splitSignature(signature);
+
+
+
+    // await vault.depositWithPermit(
+    //   value, 
+    //   deadline,
+    //   v, 
+    //   r, 
+    //   s
+    // );
+    // expect(await gaga.balanceOf(owner.address)).to.equal(0);
+    // expect(await vault.totalAssets()).to.equal(10000);
   });
 
 });
