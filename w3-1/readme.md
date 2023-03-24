@@ -14,6 +14,15 @@
 ### 作业2
 [作业2](./homework2.png)
 
+#### 1.合约
+Nft市场合约：[NftMarket.sol](./hardhat-nft-market/contracts/NftMarket.sol)
+
+
+#### 2.测试用例
+[Vault.js](./hardhat-nft-market/test/NftMarket.js)
+
+#### 2.opensea测试网查看
+[testnets.opensea.png](./testnets.opensea.png)
 
 
 ## 总结
