@@ -11,11 +11,14 @@ ERC20V2：[ERC20V2.sol](./upgradeable-erc20/contracts/ERC20V2.sol)
 [逻辑合约地址](https://goerli.etherscan.io/address/0xEe2F7b8F441d293C8Bf7844B9301fE6a110107Af)
 
 部署合约：得到的是代理合约地址。
-[](./1.deploy.png)
+![](./1.deploy.png)
 
 验证合约：会先给你验证逻辑合约地址，再验证代理合约的代码。
-[](./2.verify.png)
+![](./2.verify.png)
 
+
+#### 3.测试用例
+[UpgradeableErc20.js](./upgradeable-erc20/test/UpgradeableErc20.js)
 
 ## 总结
 
