@@ -8,24 +8,34 @@ describe("Test contract", function () {
     const [owner, addr1] = await ethers.getSigners();
 
     const ERC20V1 = await ethers.getContractFactory("ERC20V1");
-    const erc20V1 = await upgrades.deployProxy(ERC20V1);
-    console.log("erc20V1 token address:", erc20V1.address);
+    const ERC20V2 = await ethers.getContractFactory("ERC20V2");
 
+    const erc20V1Proxy = await upgrades.deployProxy(ERC20V1);
+    const erc20V2Proxy = await upgrades.upgradeProxy(erc20V1Proxy.address, ERC20V2);
 
-    return { erc20V1, owner, addr1 };
+    console.log(await erc20V1Proxy.name()); // erc20V1
+
+    // console.log(await erc20V2Proxy.initialize()); // error: Initializable: contract is already initialized
+    console.log(); // erc20V1
+
+    assert.equal(await erc20V2Proxy.name(), erc20V2Proxy.address, "expect name changed");
+    return { erc20V1Proxy, erc20V2Proxy, owner, addr1 };
   }
 
-  it("test mint gaga token", async function () {
-    const { erc20V1, owner, addr1 } = await loadFixture(deployFixture);
-    console.log(await erc20V1.name());
-    console.log(await erc20V1.getProxyAdmin());
+  it("expect proxy address equal", async function () {
 
-
-    // await gaga.mint(10000);
-    // expect(await gaga.balanceOf(owner.address)).to.equal(10000);
-
-    // await expect(gaga.mint(90001)).to.be.revertedWith('Max totalSupply is 100000');
+    const { erc20V1Proxy, erc20V2Proxy, owner, addr1 } = await loadFixture(deployFixture);
+    assert.equal(erc20V1Proxy.address, erc20V2Proxy.address, "expect proxy address equal");
   });
 
+  it("expect mint 200 tokens", async function () {
+    const { erc20V1Proxy, erc20V2Proxy, owner, addr1 } = await loadFixture(deployFixture);
+
+    await erc20V1Proxy.mint(100);
+    await erc20V2Proxy.mint(100);
+
+    assert.equal(await erc20V1Proxy.balanceOf(owner.address), 200, "expect mint equal");
+    assert.equal(await erc20V2Proxy.balanceOf(owner.address), 200, "expect mint equal");
+  })
 
 });

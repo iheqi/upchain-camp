@@ -21,7 +21,7 @@ Nft市场合约：[NftMarket.sol](./hardhat-nft-market/contracts/NftMarket.sol)
 #### 2.测试用例
 [Vault.js](./hardhat-nft-market/test/NftMarket.js)
 
-#### 2.opensea测试网查看
+#### 3.opensea测试网查看
 [testnets.opensea.png](./testnets.opensea.png)
 
 

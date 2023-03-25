@@ -11,6 +11,10 @@ contract ERC20V1 is Initializable, ERC20Upgradeable {
         _disableInitializers();
     }
 
+    function mint(uint256 amount) public {
+        _mint(msg.sender, amount);
+    }
+
     function initialize() initializer public {
         __ERC20_init("ERC20V1", "ERC20V1");
     }
