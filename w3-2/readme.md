@@ -34,7 +34,7 @@ ERC20V2：[ERC20V2.sol](./upgradeable-erc20/contracts/ERC20V2.sol)
 
 部署之后想看代理合约代码是怎样的，可以部署到goerli然后验证查看。而想查看 ProxyAdmin 的地址，可以在交易的log中查看到：
 https://goerli.etherscan.io/tx/0x964befbe11877376337fde08dedc3e041299722f06181d07a766ea0b5e55c784#eventlog
-
+（或者使用`import {getAdminAddress, getImplementationAddress} from "@openzeppelin/upgrades-core"`，其原理是直接看插槽。）
 
 在 [ProxyAdmin](https://goerli.etherscan.io/address/0xAc84124DA5CAD0F23D6cC07BB5d1499eAEb66554#readContract) 中输入代理合约地址[0xc9B29F03eb98377df0250554B42150C12D3237C5]可以调用代理合约上的方法。
 
