@@ -1,16 +1,17 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 
-import { Account } from '../components'
+import { Account, Vault } from '../components'
 
 function Page() {
   const { isConnected } = useAccount()
   return (
     <>
-      <h1>wagmi + RainbowKit + Next.js</h1>
+      <h2>wagmi + RainbowKit + Next.js</h2>
 
       <ConnectButton />
       {isConnected && <Account />}
+      {isConnected && <Vault />}
     </>
   )
 }

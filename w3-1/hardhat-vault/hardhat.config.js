@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require('hardhat-abi-exporter');
 require('dotenv').config();
 
 const { ALCHEMY_API_KEY, GOERLI_PRIVATE_KEY, ETHERSCAN_API_KEY } = process.env;
