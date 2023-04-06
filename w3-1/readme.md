@@ -6,6 +6,9 @@
 
 #### 1.合约
 
+- gaga token address: 0xc493641bed3Fe0E783AF275fCE702626e37599Bd
+- vault address: 0xF954fBD0d77D00B0400A40846302C8E2A6B95aD5
+
 代币合约：[GAGA.sol](./hardhat-vault/contracts/GaGa.sol)
 
 金库合约：[Vault.sol](./hardhat-vault/contracts/Vault.sol)
