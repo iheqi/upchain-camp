@@ -40,3 +40,9 @@ Nft 市场合约：[NftMarket.sol](./hardhat-nft-market/contracts/NftMarket.sol)
 - Fundry Permit 验证示例参考：https://github.com/xilibi2003/training_camp_2/blob/answer/w3_code/test/ERC2612.t.sol
 
 - 前端 Permit 验证示例：https://github.com/xilibi2003/training_camp_2/blob/answer/w3_2_code/vue-project/src/components/ERC20.vue
+
+另外，对于构造函数有参数的合约的开源验证，需在命令后面加上参数：
+
+```
+npx hardhat verify --network goerli 0xc493641bed3Fe0E783AF275fCE702626e37599Bd "GAGA" "GAGA"
+```
